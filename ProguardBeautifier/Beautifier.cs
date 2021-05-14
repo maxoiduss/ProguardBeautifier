@@ -11,6 +11,13 @@ namespace ProguardBeautifier
 	{
 		public static Action<IEnumerable<string>> WriteFileAction { get; set; }
 
+		public static void PrintProblemLineDetailsAndExitIfNeeded(int lineIndex, bool needToExit = false, int exitCode = 1)
+		{
+			Console.WriteLine($"Problem started at {lineIndex} string. Take a look.");
+
+			if (needToExit) Environment.Exit(exitCode);
+		}
+
 		public static void BeautifyProguard(IEnumerable<string> proguardFile)
 		{
 			List<string> file = new(proguardFile);
@@ -54,25 +61,26 @@ namespace ProguardBeautifier
 			// output creation
 			List<string> output = result.SelectMany(segm =>
 			{
-				(string Open, string Close) br = ('{'.ToString(), '}'.ToString());
 				List<string> list = new();
+				string Opened = '{'.ToString(), Closed = '}'.ToString();
 
 				if (segm.Value.Count > 1)
 				{
 					list.Add(segm.Key);
-					list.Add(br.Open);
-					list.AddRange(segm.Value);
-					list.Add(br.Close);
+					list.Add(Opened);
+					list.AddRange(segm.Value.Select(s => $"{Consts.Tab}{s.Trim()}"));
+					list.Add(Closed);
 				}
 				else if (segm.Value.Count == 1)
 				{
-					list.Add($"{segm.Key} {br.Open} {segm.Value.First()} {br.Close}");
+					list.Add($"{segm.Key} {Opened} {segm.Value.First()} {Closed}");
 				}
 				else list.Add(segm.Key);
 
 				return list;
 			}).ToList();
-			// ToDo: we need to insert empty string before the start of #- comment block
+			output.InsertEmptyStringsBeforeComments();
+
 			// finally we can write output data to file
 			WriteFileAction(output);
 
@@ -82,7 +90,7 @@ namespace ProguardBeautifier
 				{
 					if (file[i].Count(c => c == checkForChar) > 1)
 					{
-						(i++).PrintProblemLineDetailsAndExitIfNeeded();
+						PrintProblemLineDetailsAndExitIfNeeded(i++);
 					}
 				}
 				Segments.Add(new StringAndStringsPair(file[i].TrimStart(' '.AsArray()), new List<string>()));
@@ -144,7 +152,7 @@ namespace ProguardBeautifier
 				catch (Exception ex)
 				{
 					Console.WriteLine($" {Consts.ErrorMessage}\nStacktrace: {ex.StackTrace}");
-					start.PrintProblemLineDetailsAndExitIfNeeded(true);
+					PrintProblemLineDetailsAndExitIfNeeded(start, true);
 				}
 			}
 		}

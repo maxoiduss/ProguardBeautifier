@@ -9,6 +9,7 @@ namespace ProguardBeautifier
 		public const char Start = '-';
 		public const char End = ';';
 		public const char Comms = '#';
+		public const string Tab = "   ";
 		public const string ErrorMessage = "The file is corrupted or structure is wrong.";
 		public const string FilenamePostfix = "-generated";
 	}

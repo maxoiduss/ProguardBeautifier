@@ -12,13 +12,6 @@ namespace ProguardBeautifier
 	{
 		#region @private extensions
 
-		static void PrintProblemLineDetailsAndExitIfNeeded(this int lineIndex, bool needToExit = false, int exitCode = 1)
-		{
-			Console.WriteLine($"Problem started at {lineIndex} string. Take a look.");
-
-			if (needToExit) Environment.Exit(exitCode);
-		}
-
 		static int GetClosedStateCharIndex(this string str, int state)
 		{
 			var index = 0;
@@ -30,7 +23,6 @@ namespace ProguardBeautifier
 
 				++index;
 			});
-
 			return index;
 		}
 
@@ -58,22 +50,34 @@ namespace ProguardBeautifier
 			}
 			return unitedSegments;
 		}
-		#endregion @private extensions
 
-		public static void ShiftStringToNextLineAfter(this List<string> file, int indexInString, int currentLineIndex)
+		static void InsertEmptyStringsBeforeComments(this List<string> list)
 		{
-			var nextStr = file[currentLineIndex].Substring(indexInString + 1);
-			var thisStr = file[currentLineIndex].Remove(indexInString + 1, file[currentLineIndex].Length - indexInString - 1);
+			int i = -1, state = 0;
 
-			file[currentLineIndex] = thisStr;
-			file.Insert(currentLineIndex + 1, nextStr);
+			while (++i < list.Count)
+			{
+				var _state = state;
+
+				if (list[i].StartsWith('#'.ToString()))
+				{
+					state = -1;
+				}
+				else state = 1;
+
+				if (state != _state && state < 0)
+				{
+					list.Insert(i, string.Empty);
+				}
+			}
 		}
 
-		public static IEnumerable<string> RemoveEmptyStrings(this IEnumerable<string> strs)
+		static IEnumerable<string> RemoveEmptyStrings(this IEnumerable<string> strs)
 		{
 			return strs.Where(s => !string.IsNullOrEmpty(s) && !string.IsNullOrWhiteSpace(s))
 					   .ToList();
 		}
+		#endregion @private extensions
 
 		public static string RemoveMultipleSpacesInARow(this string str)
 		{
@@ -85,5 +89,14 @@ namespace ProguardBeautifier
 		public static string RemoveWhiteSpaces(this string input) => Regex.Replace(input, @"\s+", "");
 
 		public static char[] AsArray(this char c) => new char[] { c };
+
+		public static void ShiftStringToNextLineAfter(this List<string> file, int indexInString, int currentLineIndex)
+		{
+			var nextStr = file[currentLineIndex].Substring(indexInString + 1);
+			var thisStr = file[currentLineIndex].Remove(indexInString + 1, file[currentLineIndex].Length - indexInString - 1);
+
+			file[currentLineIndex] = thisStr;
+			file.Insert(currentLineIndex + 1, nextStr);
+		}
 	}
 }

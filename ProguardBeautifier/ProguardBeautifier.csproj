@@ -32,8 +32,15 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Program.IO.cs">
+      <DependentUpon>..\Program.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Beautifier.cs" />
+    <Compile Include="Beautifier.Extensions.cs">
+      <DependentUpon>..\Beautifier.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ProguardBeautifier
 {
-	public partial class MainClass
+	public static partial class MainClass
 	{
 		public static void ReadFile(string filePath, out IEnumerable<string> file)
 		{
@@ -26,6 +26,16 @@ namespace ProguardBeautifier
 			}
 
 			Console.WriteLine("\n");
+		}
+
+		public static void WriteToFile(this IEnumerable<string> contents, string path)
+		{
+			var dotSplitted = path.Split('.');
+			var filePath = dotSplitted[dotSplitted.Length - 2];
+			var fileExtension = dotSplitted[dotSplitted.Length - 1];
+			var newFullFilePath = $"{filePath}{Consts.FilenamePostfix}.{fileExtension}";
+
+			File.WriteAllLines(newFullFilePath, contents);
 		}
 	}
 }

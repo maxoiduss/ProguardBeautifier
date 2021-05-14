@@ -9,6 +9,8 @@ namespace ProguardBeautifier
 
 	public static partial class Beautifier
 	{
+		public static Action<IEnumerable<string>> WriteFileAction { get; set; }
+
 		public static void BeautifyProguard(IEnumerable<string> proguardFile)
 		{
 			List<string> file = new(proguardFile);
@@ -20,7 +22,7 @@ namespace ProguardBeautifier
 				if (string.IsNullOrEmpty(file[i])) continue;
 
 				if (file[i].Trim()[0] == Consts.Comms)
-				{   // comments
+				{	// comments
 					populateSegmentsOnlyByString();
 				}
 				else if (file[i].Contains('{'))
@@ -29,7 +31,7 @@ namespace ProguardBeautifier
 					populateSegments();
 				}
 				else if (file[i].Trim()[0] == Consts.Start)
-				{   // ordinary proguard rule string
+				{	// ordinary proguard rule string
 					populateSegmentsOnlyByString(checkForChar: Consts.Start);
 				}
 			}
@@ -48,6 +50,31 @@ namespace ProguardBeautifier
 			Dictionary<string, List<string>> result =
 				segments.GetUnitedIdenticalSegments()
 						.ToDictionary(keySelector: pair => headers[pair.Key], elementSelector: pair => pair.Value);
+
+			// output creation
+			List<string> output = result.SelectMany(segm =>
+			{
+				(string Open, string Close) br = ('{'.ToString(), '}'.ToString());
+				List<string> list = new();
+
+				if (segm.Value.Count > 1)
+				{
+					list.Add(segm.Key);
+					list.Add(br.Open);
+					list.AddRange(segm.Value);
+					list.Add(br.Close);
+				}
+				else if (segm.Value.Count == 1)
+				{
+					list.Add($"{segm.Key} {br.Open} {segm.Value.First()} {br.Close}");
+				}
+				else list.Add(segm.Key);
+
+				return list;
+			}).ToList();
+			// ToDo: we need to insert empty string before the start of #- comment block
+			// finally we can write output data to file
+			WriteFileAction(output);
 
 			void populateSegmentsOnlyByString(char? checkForChar = null)
 			{
@@ -85,7 +112,7 @@ namespace ProguardBeautifier
 						{
 							if ((state < 0 && file[i].LastIndexOf('{') > file[i].LastIndexOf('}')) ||
 								(state == 0 && file[i].IndexOf('{') > file[i].IndexOf('}')))
-							{   // here we get the point where new segment begins, set state 0 and exit loop
+							{	// here we get the point where new segment begins, set state 0 and exit loop
 								var segmentStart = file[i].GetClosedStateCharIndex(state) + 1;
 								file.ShiftStringToNextLineAfter(segmentStart, i);
 

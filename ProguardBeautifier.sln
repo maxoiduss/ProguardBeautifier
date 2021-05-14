@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.810.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProguardBeautifier", "ProguardBeautifier\ProguardBeautifier.csproj", "{367FB817-131C-44F7-8D97-E387C9AAA1D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{367FB817-131C-44F7-8D97-E387C9AAA1D2}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{367FB817-131C-44F7-8D97-E387C9AAA1D2}.Debug|anycpu.Build.0 = Debug|anycpu
+		{367FB817-131C-44F7-8D97-E387C9AAA1D2}.Release|anycpu.ActiveCfg = Release|anycpu
+		{367FB817-131C-44F7-8D97-E387C9AAA1D2}.Release|anycpu.Build.0 = Release|anycpu
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {491FC9A6-85D4-429D-9BC4-933F45447B1D}
+	EndGlobalSection
+EndGlobal
